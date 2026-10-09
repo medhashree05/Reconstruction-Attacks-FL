@@ -1,0 +1,58 @@
+[
+  {
+    "mse": 0.4673693776130676,
+    "psnr": 3.3033974630695506,
+    "ssim": 0.0005571790691088939,
+    "success": false,
+    "label_match": 0,
+    "pred_label": 2,
+    "true_label": 9,
+    "client_id": 1,
+    "iterations": 8,
+    "converged": true,
+    "duration_sec": 1.6106913089752197,
+    "final_grad_loss": 3282.377685546875
+  },
+  {
+    "mse": 0.48404210805892944,
+    "psnr": 3.1511685632628113,
+    "ssim": 0.006603115198120197,
+    "success": false,
+    "label_match": 0,
+    "pred_label": 4,
+    "true_label": 5,
+    "client_id": 2,
+    "iterations": 24,
+    "converged": true,
+    "duration_sec": 6.491262674331665,
+    "final_grad_loss": 3214.090576171875
+  },
+  {
+    "mse": 0.5049799084663391,
+    "psnr": 2.9672590072447185,
+    "ssim": -0.0006705728700133366,
+    "success": false,
+    "label_match": 0,
+    "pred_label": 0,
+    "true_label": 7,
+    "client_id": 3,
+    "iterations": 14,
+    "converged": true,
+    "duration_sec": 3.414724588394165,
+    "final_grad_loss": 3279.97607421875
+  },
+  {
+    "mse": 0.4659622609615326,
+    "psnr": 3.316492560994018,
+    "ssim": 0.04362985991447664,
+    "success": false,
+    "label_match": 0,
+    "pred_label": 9,
+    "true_label": 0,
+    "client_id": 4,
+    "iterations": 5,
+    "converged": true,
+    "duration_sec": 0.4979100227355957,
+    "final_grad_loss": 3414.25732421875
+  }
+]

@@ -93,7 +93,11 @@ def save_loss_curve(loss_history, cid, path):
 def save_summary_grid(client_results, path):
     """Save summary grid of all clients (Ground Truth vs Reconstructed)."""
     n = len(client_results)
-    fig, axes = plt.subplots(2, n, figsize=(2.5 * n, 5.2))
+    fig, axes = plt.subplots(
+    	2, n,
+    	figsize=(2.5 * n, 5.2),
+    	squeeze=False
+    )
     
     for i, res in enumerate(client_results):
         cid = res["client_id"]

@@ -1,0 +1,9 @@
+experiment,defense,parameter,initial_accuracy,final_accuracy,final_accuracy_percent
+No Defense,none,0.0,0.1287,0.9648,96.48
+Clip 1.0,clip,1.0,0.1287,0.9642,96.41999999999999
+Clip 0.5,clip,0.5,0.1287,0.9544,95.44
+Clip 0.1,clip,0.1,0.1287,0.8867,88.67
+DP 0.01,dp,0.01,0.1287,0.9632,96.32
+DP 0.05,dp,0.05,0.1287,0.9563,95.63000000000001
+DP 0.1,dp,0.1,0.1287,0.9055,90.55
+DP 0.5,dp,0.5,0.1287,0.1157,11.57
