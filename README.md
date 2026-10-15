@@ -1,288 +1,311 @@
 # Reconstruction Attacks in Federated Learning: Privacy Risks and Defense Mechanisms
 
-A small, end-to-end study of **gradient leakage in Federated Learning (FL)**. We build an FL system on MNIST, show that private training images can be reconstructed from the gradients clients share, then evaluate **gradient clipping** and **differential privacy (DP)** as defenses, measuring both privacy protection and model accuracy.
+A four-task Cryptography and Network Security project that studies **gradient-based data reconstruction in Federated Learning (FL)**. The project builds a small FL system using MNIST and PyTorch, demonstrates a Deep Leakage from Gradients (DLG)-style attack, applies gradient clipping and Gaussian-noise perturbation, and compares reconstruction quality and model utility.
 
-> **Research question:** To what extent can private training data be reconstructed from gradients shared during Federated Learning, and how effectively do gradient clipping and differential privacy mitigate this privacy risk while maintaining model utility?
+> **Research question:** To what extent can a private MNIST image be reconstructed from a client gradient, and how do gradient clipping and Gaussian-noise perturbation affect reconstruction quality and model accuracy?
 
----
+## Project at a glance
 
-## Table of Contents
+| Task | Purpose | Main outputs |
+|---|---|---|
+| **1. Federated Learning setup** | Train a global model with four clients and FedAvg; save single-image gradients for the attack | Initial/final model checkpoints, per-client gradients and updates, baseline accuracy |
+| **2. Reconstruction attack** | Use gradient matching to infer a private image from a saved gradient | Original/reconstructed image comparisons, attack progression and loss plots, CSV/JSON metrics |
+| **3. Defenses** | Clip gradients and generate clipped-plus-noisy gradient variants | Protected `.pt` gradient files and validation results |
+| **4. Evaluation** | Run the same reconstruction attack against unprotected and protected gradients; separately compare model accuracy under update-level defenses | Per-experiment results, comparison tables, and plots |
 
-1. [Overview](#overview)
-2. [Threat Model](#threat-model)
-3. [Repository Structure](#repository-structure)
-4. [Installation](#installation)
-5. [Quick Start](#quick-start)
-6. [Task Details](#task-details)
-7. [Metrics](#metrics)
-8. [Experiments](#experiments)
-9. [Results](#results)
-10. [Key Findings](#key-findings)
-11. [Limitations](#limitations)
-12. [References](#references)
+## How the pipeline works
 
----
-
-## Overview
-
-The project is organised as four sequential tasks. Each task consumes the output of the previous one.
-
+```text
+Task 1: Federated Learning
+MNIST -> 4 clients -> local training -> FedAvg
+                         |
+                         +-> single-sample gradients saved
+                                      |
+                                      v
+Task 2: DLG-style reconstruction
+Saved gradient + known model architecture/weights
+              -> optimize dummy image to match gradient
+              -> compare reconstruction with held-out ground truth
+                                      |
+                                      v
+Task 3: Defense generation
+Original gradient -> global-norm clipping
+                  -> clipping + Gaussian noise
+                                      |
+                                      v
+Task 4: Evaluation
+Run the same attack against each gradient variant
++ train separate FL runs to compare final model accuracy
 ```
-Task 1: Build FL system  ->  save client gradients / model updates
-Task 2: DLG attack       ->  reconstruct private images from saved gradients
-Task 3: Defenses         ->  clip + add noise to the same gradients
-Task 4: Evaluation       ->  re-run the same attack, compare privacy vs. accuracy
-```
 
-| Task | Goal | Main Output |
-|------|------|-------------|
-| 1 | FL setup with FedAvg on MNIST | Global model, baseline accuracy, saved client updates |
-| 2 | DLG-style reconstruction attack | Reconstructed images, MSE / PSNR |
-| 3 | Gradient clipping + DP noise | Protected updates, accuracy under defense |
-| 4 | Attack vs. defense comparison | Tables, plots, privacy-utility analysis, conclusion |
+The project deliberately saves ground-truth images and labels separately. They are used only for scoring and visualization; the attack implementation should not use them as attack inputs.
 
----
+## Repository structure
 
-## Threat Model
-
-- **Attacker:** an *honest-but-curious* central server. It follows the FL protocol correctly but tries to infer client data from what it receives.
-- **Attacker knowledge:** model architecture, model parameters, loss function, and the gradients / model updates sent by clients. Labels may be known or inferred depending on the attack setup.
-- **Attacker does not have:** the original private images.
-- **Goal of the attacker:** reconstruct a client's private training image(s) from the shared gradient.
-
----
-
-## Repository Structure
-
-```
-Reconstruction-Attacks-FL/
-│
-├── task1_fl_setup/
-│   ├── dataset.py            # MNIST loading and client partitioning
-│   ├── model.py              # PyTorch model
-│   ├── client.py             # local training, gradient/update generation
-│   ├── server.py             # FedAvg aggregation
-│   ├── train.py              # runs the FL training loop
-│   ├── models/
-│   │   └── global_model.pth
-│   └── updates/
-│       ├── client1_update.pt
-│       ├── client2_update.pt
-│       ├── client3_update.pt
-│       └── client4_update.pt
-│
-├── task2_reconstruction_attack/
-│   ├── dlg_attack.py         # Deep Leakage from Gradients implementation
-│   ├── reconstruction.py     # runs attack on saved gradients, saves outputs
-│   ├── metrics.py            # MSE, PSNR, success criteria
-│   └── results/
-│
-├── task3_defenses/
-│   ├── gradient_clipping.py
-│   ├── differential_privacy.py
-│   └── protected_updates/
-│
-├── task4_evaluation/
-│   ├── experiments.py        # runs no-defense / clipping / DP experiments
-│   ├── comparison.py         # builds comparison tables
-│   ├── plots.py              # generates graphs
-│   └── results/
-│
-├── report/
+```text
+Reconstruction-Attacks-FL-main/
 ├── README.md
-└── requirements.txt
+├── requirements.txt
+├── task1_fl_setup/
+│   ├── dataset.py                  # MNIST download, client split, test loader
+│   ├── model.py                    # LeNet-style CNN with Sigmoid activations
+│   ├── client.py                   # local training and single-sample gradients
+│   ├── server.py                   # FedAvg aggregation and model evaluation
+│   ├── train.py                    # Task 1 entry point
+│   ├── THREAT_MODEL.md             # attacker assumptions
+│   ├── models/
+│   │   ├── global_model_init.pth
+│   │   ├── global_model.pth
+│   │   └── baseline_results.json
+│   └── updates/
+│       ├── client*_gradient.pt
+│       ├── client*_ground_truth.pt
+│       └── client*_update.pt
+├── task2_reconstruction_attack/
+│   ├── dlg_attack.py               # DLG-style gradient-matching optimizer
+│   ├── metrics.py                  # MSE, PSNR, SSIM, label match, success
+│   ├── reconstruction.py            # attack runner and visualizations
+│   ├── validate_task2.py            # Task 2 checks
+│   └── results/                    # images, plots, CSV/JSON summaries
+├── task3_defenses/
+│   ├── gradient_clipping.py         # global L2 norm clipping
+│   ├── differential_privacy.py      # clipping plus Gaussian noise
+│   ├── evaluate_defenses.py         # attack evaluation on protected gradients
+│   ├── analyze_results.py
+│   ├── validate_task3.py
+│   ├── protected_updates/           # generated protected gradient tensors
+│   └── results/                    # validation/evaluation outputs
+└── task4_evaluation/
+    ├── experiments.py               # run attacks across gradient variants
+    ├── comparison.py                # combine reconstruction metrics
+    ├── plots.py                     # reconstruction comparison plots
+    ├── accuracy_evaluation.py       # train FL under update-level defenses
+    ├── accuracy_plots.py
+    └── results/                     # experiment summaries and graphs
 ```
 
----
+## Requirements
+
+- Python 3.10+ recommended
+- PyTorch
+- torchvision
+- NumPy
+- Matplotlib
+- pandas
+- scikit-image
+- tqdm
+
+A CUDA-compatible GPU is optional; the experiments can run on CPU, although attack runs may take longer. The first Task 1 run downloads MNIST through `torchvision`.
 
 ## Installation
 
-```bash
-git clone https://github.com/<your-username>/Reconstruction-Attacks-FL.git
-cd Reconstruction-Attacks-FL
+Open a terminal at the repository root (the directory containing `README.md`).
 
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+### Windows PowerShell
 
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Suggested `requirements.txt`:
+If PowerShell blocks activation, you can run the environment's Python directly:
 
-```
-torch
-torchvision
-numpy
-matplotlib
-pandas
-scikit-image
-tqdm
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-MNIST is downloaded automatically by `torchvision` on first run. A GPU is optional; the single-image attack runs fine on CPU.
-
----
-
-## Quick Start
-
-Run the tasks in order from the repository root.
+### Linux / macOS
 
 ```bash
-# Task 1 - train FL system, save global model and client updates
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+## Run the project
+
+Run commands from the **repository root** unless stated otherwise. Run tasks in order so that each task has the files it needs.
+
+### Task 1 — Build the FL baseline and save gradients
+
+```bash
 python task1_fl_setup/train.py
+```
 
-# Task 2 - reconstruct a private image from a saved client gradient
+The script creates four clients, trains with FedAvg, prints test accuracy per round, and writes:
+- `task1_fl_setup/models/global_model_init.pth` — model before federated training; used by the reconstruction experiment.
+- `task1_fl_setup/models/global_model.pth` — model after the final FL round.
+- `task1_fl_setup/models/baseline_results.json` — initial and per-round test accuracy plus configuration.
+- `task1_fl_setup/updates/clientN_gradient.pt` — one private sample's gradient for each client, computed at the initial model.
+- `task1_fl_setup/updates/clientN_ground_truth.pt` — corresponding image/label for evaluation only.
+- `task1_fl_setup/updates/clientN_update.pt` — last-round client model delta.
+
+The checked-in baseline results record **96.48% final test accuracy after 20 rounds**, with four clients, two local epochs, and learning rate 0.01. Results can vary with environment or code/configuration changes; the JSON generated by your own run is the authoritative result for that run.
+
+### Task 2 — Run the reconstruction attack
+
+```bash
 python task2_reconstruction_attack/reconstruction.py
+```
 
-# Task 3 - generate clipped and noisy (DP) versions of the gradients
+Useful options:
+
+```bash
+# Attack selected clients
+python task2_reconstruction_attack/reconstruction.py --clients 1 2
+
+# Set optimization iterations and learning rate
+python task2_reconstruction_attack/reconstruction.py --max-iter 100 --lr 1.0
+
+# Select optimizer
+python task2_reconstruction_attack/reconstruction.py --optimizer lbfgs
+python task2_reconstruction_attack/reconstruction.py --optimizer adam
+
+# Use analytical label inference or cosine distance
+python task2_reconstruction_attack/reconstruction.py --label-strategy analytical
+python task2_reconstruction_attack/reconstruction.py --cost-fn cosine
+```
+
+Check `python task2_reconstruction_attack/reconstruction.py --help` for the exact options supported by your local version. Outputs are saved in `task2_reconstruction_attack/results/`, including per-client comparisons, reconstruction progression images, gradient-matching loss curves, and summary CSV/JSON files.
+
+### Task 3 — Generate protected gradients
+
+Run both scripts from the repository root:
+
+```bash
 python task3_defenses/gradient_clipping.py
 python task3_defenses/differential_privacy.py
+```
 
-# Task 4 - re-run the attack on protected gradients, produce tables and plots
+Gradient clipping evaluates global L2 thresholds **1.0, 0.5, and 0.1**. The Gaussian-noise script first clips to norm 1.0 and then adds noise with levels **0, 0.01, 0.05, 0.1, and 0.5**.
+
+Protected gradient tensors are written to `task3_defenses/protected_updates/`. Running the scripts again overwrites files with matching names.
+
+### Task 4 — Compare reconstruction and model utility
+
+Run the reconstruction experiments and combine the results:
+
+```bash
 python task4_evaluation/experiments.py
 python task4_evaluation/comparison.py
 python task4_evaluation/plots.py
 ```
 
-> Adjust script names or arguments if your implementation differs.
+To evaluate **global model accuracy** when clipping/noise is applied to client model updates during FL training, run:
 
----
+```bash
+python task4_evaluation/accuracy_evaluation.py
+python task4_evaluation/accuracy_plots.py
+```
 
-## Task Details
+These are two related but distinct experiments:
+1. **Gradient reconstruction experiment:** protects the single-sample gradients saved by Task 1 and runs the attack against them.
+2. **Model utility experiment:** performs new FL training runs and protects each client's model delta before aggregation.
 
-### Task 1: Federated Learning Setup
+Do not treat the two as the exact same mechanism or assume their parameter values have identical meaning.
 
-- Load MNIST (28x28 grayscale) and split it across multiple clients (e.g. 4).
-- Each client receives the global model, trains locally, and produces a gradient / model update.
-- The server aggregates updates with **Federated Averaging (FedAvg)** to produce a new global model.
-- Client updates and the global model are saved to disk; baseline test accuracy is recorded.
+## Methodology
 
-### Task 2: Reconstruction Attack (DLG)
+### Task 1: Federated Learning
 
-Deep Leakage from Gradients recovers training data by gradient matching:
+- Dataset: MNIST, 28 × 28 grayscale images with ten classes.
+- Client count: four.
+- Client partition: disjoint IID subsets; each client receives 2,000 training examples in the current implementation.
+- Model: a small LeNet-style CNN with Sigmoid activations.
+- Local training: SGD.
+- Aggregation: FedAvg, implemented by averaging client model deltas and adding the average delta to the global parameters.
+- Gradient target: the gradient of cross-entropy loss for one client image, computed using the **initial global model**.
 
-1. Load the Task 1 model and a saved target gradient.
-2. Initialise a random dummy image and dummy label.
-3. Compute the gradient of the model on the dummy data.
-4. Measure the distance between the dummy gradient and the target gradient.
-5. Optimise the dummy image (and label) to minimise that distance.
-6. Repeat until the dummy image converges toward the private image.
+### Task 2: DLG-style reconstruction
 
-The first experiment uses a **single MNIST image**. Optional extensions: more iterations, different learning rates, larger batch sizes, multiple images, and different clients.
+The attacker starts with a dummy image and seeks to make its model gradient match the observed target gradient. It iteratively minimizes a gradient-distance objective, then compares the inferred image with the ground-truth image outside the attack loop.
+
+This is a controlled demonstration using a single image per client. It does not imply that every FL gradient or batch can be reconstructed equally well.
 
 ### Task 3: Defenses
 
-Both defenses are applied to the **same Task 1 gradients** (no separate FL system).
+**Global-norm gradient clipping** rescales the concatenated gradient collection if its L2 norm exceeds a threshold:
 
-| Defense | Operation | Parameter |
-|---------|-----------|-----------|
-| Gradient clipping | Rescale gradient so that `‖g‖ <= C` | `C` in {1.0, 0.5, 0.1} |
-| Differential privacy | Clip, then add random noise: `g_protected = clip(g, C) + noise` | noise level in {0, 0.01, 0.05, 0.1, 0.5} |
+`scale = min(1, C / (||g|| + epsilon))`
 
-Secure aggregation is discussed as a complementary defense but is not the primary implementation. Exact values should be tuned to the experiment.
+**Gaussian-noise perturbation** clips to a norm of 1.0 and adds random Gaussian noise to each gradient tensor:
 
-### Task 4: Evaluation
+`protected_gradient = clipped_gradient + noise`
 
-The identical Task 2 attack is run against unprotected, clipped, and DP-protected gradients. Reconstruction quality and global model accuracy are compared, and the privacy-utility trade-off is analysed as noise increases.
+**Privacy terminology caution:** the code demonstrates clipping and Gaussian-noise perturbation, but the configured noise values are not accompanied by a formal privacy accountant or a calibrated `(epsilon, delta)` guarantee. Therefore, results should be described as *Gaussian-noise perturbation / DP-inspired protection*, not as a formally proven differential-privacy guarantee.
 
----
+### Task 4: Evaluation metrics
 
-## Metrics
+- **MSE:** mean squared pixel error; lower means closer reconstruction.
+- **PSNR:** peak signal-to-noise ratio in dB; higher generally means closer reconstruction.
+- **SSIM:** structural similarity; higher generally means more similar structure.
+- **Label match:** whether the classifier's predicted label for the reconstructed image matches the ground-truth label.
+- **Attack success:** the success flag produced by the project's metric function and its configured threshold. Check `task2_reconstruction_attack/metrics.py` before interpreting this as a universal criterion.
+- **Model accuracy:** test accuracy of the global model; higher indicates better utility.
 
-| Metric | Meaning | Better for attacker |
-|--------|---------|---------------------|
-| **MSE** | Mean squared error between original and reconstructed image | Lower |
-| **PSNR** | Peak signal-to-noise ratio (dB) | Higher |
-| **Similarity** | Visual / structural similarity (e.g. SSIM) | Higher |
-| **Label match** | Original vs. reconstructed label | Match |
-| **Attack success** | Reconstruction meets a defined MSE/PSNR threshold | Success |
-| **Iterations** | Optimisation steps needed to converge | Fewer |
-| **Model accuracy** | Global model test accuracy (utility measure) | Higher is better for utility |
+## Results included in this repository
 
-Define your success threshold explicitly (e.g. PSNR above X dB or MSE below Y) and keep it fixed across all experiments.
+The repository contains saved experiment outputs. The following are **the values recorded in those files**, not guarantees for future runs. Reconstruction results are averaged over four client images.
 
----
+### Reconstruction attack results
 
-## Experiments
+| Gradient variant | Mean MSE ↓ | Mean PSNR (dB) ↑ | Mean SSIM ↑ | Attack success |
+|---|---:|---:|---:|---:|
+| No defense | 0.000000190 | 67.33 | 0.99994 | 4/4 |
+| Clipping, C = 1.0 | 0.000000459 | 63.46 | 0.99981 | 4/4 |
+| Clipping, C = 0.5 | 0.00000608 | 53.25 | 0.99780 | 4/4 |
+| Clipping, C = 0.1 | 0.000398 | 34.21 | 0.94949 | 4/4 |
+| Noise = 0.01 | 0.05762 | 12.42 | 0.57960 | 0/4 |
+| Noise = 0.05 | 0.42400 | 3.73 | 0.09461 | 0/4 |
+| Noise = 0.1 | 0.46884 | 3.29 | 0.01809 | 0/4 |
+| Noise = 0.5 | 0.48059 | 3.18 | 0.01253 | 0/4 |
 
-1. **No defense:** FL, original gradient, attack. Record reconstruction quality, MSE, PSNR, success, accuracy.
-2. **Gradient clipping:** same pipeline with clipping at several thresholds `C`.
-3. **Differential privacy:** clipping plus noise at several noise levels.
-4. **Privacy-utility sweep:** vary the noise level and observe reconstruction error against model accuracy.
+`Noise = 0` is a control case in the DP-gradient experiment, not an additional privacy protection level.
 
----
+### Model utility results
 
-## Results
+The saved `task4_evaluation/results/model_accuracy_results.csv` records these final test accuracies:
 
-> Fill in after running the experiments.
+| Experiment | Final accuracy |
+|---|---:|
+| No defense | 96.48% |
+| Clip update, C = 1.0 | 96.42% |
+| Clip update, C = 0.5 | 95.44% |
+| Clip update, C = 0.1 | 88.67% |
+| Noise on update, 0.01 | 96.32% |
+| Noise on update, 0.05 | 95.63% |
+| Noise on update, 0.1 | 90.55% |
+| Noise on update, 0.5 | 11.57% |
 
-### Main comparison
+### Interpretation
 
-| Defense | Reconstruction | MSE | PSNR (dB) | Accuracy |
-|---------|----------------|-----|-----------|----------|
-| No defense | High | | | |
-| Gradient clipping | Medium | | | |
-| Differential privacy | Low | | | |
+- The unprotected single-image gradients in the recorded experiment allowed highly accurate reconstructions.
+- Clipping alone reduced reconstruction quality as the threshold became smaller, but did not prevent the configured attack from succeeding on these four samples.
+- Gaussian noise at the tested levels substantially degraded the recorded reconstructions.
+- In the separate FL utility experiment, stronger perturbation reduced final model accuracy, particularly at noise level 0.5.
+- These are small, controlled experiments on four MNIST samples. They are useful demonstrations, not broad claims about all FL systems.
 
-### Privacy-utility sweep (DP noise)
+## Important limitations
 
-| Noise | MSE | PSNR (dB) | Attack success | Accuracy |
-|-------|-----|-----------|----------------|----------|
-| 0 | | | | |
-| 0.01 | | | | |
-| 0.05 | | | | |
-| 0.1 | | | | |
-| 0.5 | | | | |
-
-### Plots
-
-Generated into `task4_evaluation/results/`:
-
-1. Noise level vs. reconstruction error
-2. Noise level vs. model accuracy
-3. Defense method vs. reconstruction quality
-4. Defense method vs. model accuracy
-5. Privacy protection vs. model utility
-
-### Example reconstructions
-
-| Original | No defense | Clipping | DP |
-|----------|-----------|----------|----|
-| ![original](task2_reconstruction_attack/results/original.png) | ![no defense](task2_reconstruction_attack/results/recon_nodefense.png) | ![clip](task4_evaluation/results/recon_clip.png) | ![dp](task4_evaluation/results/recon_dp.png) |
-
----
-
-## Key Findings
-
-> Replace with your actual conclusions. Expected narrative:
-
-- Shared gradients can leak private training data: the DLG attack reconstructs MNIST images from unprotected gradients with high fidelity.
-- Gradient clipping alone reduces gradient magnitude, but may only partially reduce leakage since the gradient direction is largely preserved.
-- Adding DP noise degrades reconstruction substantially as noise grows.
-- Increasing noise lowers model accuracy, illustrating the **privacy-utility trade-off**.
-- Recommended defense: *(state the clipping threshold and noise level that best balance privacy and accuracy in your results).*
-
----
-
-## Limitations
-
-- MNIST is simple; results may not transfer directly to larger images or deeper models.
-- Single-image and small-batch attacks are far easier than large-batch reconstruction.
-- The noise levels here are not tied to a formal `(epsilon, delta)` privacy budget unless you add a privacy accountant.
-- Only an honest-but-curious server is considered; malicious servers or colluding clients are out of scope.
-
----
+1. **Small experiment:** MNIST and four clients are chosen for a manageable demonstration; results may not generalize to complex datasets or larger models.
+2. **Single-sample gradients:** the reconstruction target is a gradient from one image. Batch reconstruction can behave differently.
+3. **Ground-truth access:** ground-truth images are saved for evaluation and must not be passed into the attack optimizer.
+4. **DP guarantee:** adding Gaussian noise alone does not establish formal differential privacy. A defensible DP claim requires a correctly specified clipping/sensitivity setup, sampling assumptions, and privacy accounting.
+5. **Secure aggregation:** it is not implemented as a primary defense in this repository; it may be discussed as complementary work.
+6. **Reproducibility:** generated `.pt`, `.png`, `.csv`, and `.json` files can be overwritten by rerunning scripts. Keep copies of results used in a report.
 
 ## References
 
-- Zhu, L., Liu, Z., Han, S. *Deep Leakage from Gradients.* NeurIPS 2019.
-- McMahan, B. et al. *Communication-Efficient Learning of Deep Networks from Decentralized Data* (FedAvg). AISTATS 2017.
-- Abadi, M. et al. *Deep Learning with Differential Privacy.* CCS 2016.
-- Geiping, J. et al. *Inverting Gradients: How Easy Is It to Break Privacy in Federated Learning?* NeurIPS 2020.
-- Bonawitz, K. et al. *Practical Secure Aggregation for Privacy-Preserving Machine Learning.* CCS 2017.
-
----
+1. Zhu, L., Liu, Z., and Han, S. “Deep Leakage from Gradients.” *Advances in Neural Information Processing Systems (NeurIPS)*, 2019.
+2. Zhao, B., Mopuri, K. R., and Bilen, H. “iDLG: Improved Deep Leakage from Gradients,” 2020.
+3. McMahan, B. et al. “Communication-Efficient Learning of Deep Networks from Decentralized Data.” *AISTATS*, 2017.
+4. Geiping, J. et al. “Inverting Gradients—How Easy Is It to Break Privacy in Federated Learning?” *NeurIPS*, 2020.
+5. Abadi, M. et al. “Deep Learning with Differential Privacy.” *ACM CCS*, 2016.
+6. Bonawitz, K. et al. “Practical Secure Aggregation for Privacy-Preserving Machine Learning.” *ACM CCS*, 2017.
 
 ## License
 
-Add a license of your choice (e.g. MIT) before publishing.
+No license is specified in the current repository. Add a license file before distributing the project if required.
