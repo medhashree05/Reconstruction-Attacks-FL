@@ -1,36 +1,36 @@
 [
   {
-    "mse": 1.2142630794187426e-06,
-    "psnr": 59.156872098324484,
-    "ssim": 0.9994093749887687,
+    "mse": 1.5295082675947924e-06,
+    "psnr": 58.154481711401765,
+    "ssim": 0.9992724925525918,
     "success": true,
     "label_match": 1,
     "pred_label": 9,
     "true_label": 9,
     "client_id": 1,
-    "iterations": 11,
+    "iterations": 12,
     "converged": true,
-    "duration_sec": 3.2993884086608887,
-    "final_grad_loss": 4.7030545147208613e-07
+    "duration_sec": 4.718634366989136,
+    "final_grad_loss": 4.0994956407303107e-07
   },
   {
-    "mse": 5.673728992405813e-06,
-    "psnr": 52.46131412268327,
-    "ssim": 0.9984532520790731,
+    "mse": 4.896306563750841e-06,
+    "psnr": 53.10131398301781,
+    "ssim": 0.9985523050235323,
     "success": true,
     "label_match": 1,
     "pred_label": 5,
     "true_label": 5,
     "client_id": 2,
-    "iterations": 11,
+    "iterations": 12,
     "converged": true,
-    "duration_sec": 3.4724738597869873,
-    "final_grad_loss": 9.465207995162928e-07
+    "duration_sec": 6.332515001296997,
+    "final_grad_loss": 6.62971274323354e-07
   },
   {
-    "mse": 6.858769665996078e-06,
-    "psnr": 51.637537815512744,
-    "ssim": 0.9972555956318359,
+    "mse": 8.091462404991034e-06,
+    "psnr": 50.91972979374012,
+    "ssim": 0.9969288442006781,
     "success": true,
     "label_match": 1,
     "pred_label": 7,
@@ -38,13 +38,13 @@
     "client_id": 3,
     "iterations": 11,
     "converged": true,
-    "duration_sec": 3.4151992797851562,
-    "final_grad_loss": 7.999144031600736e-07
+    "duration_sec": 2.7030141353607178,
+    "final_grad_loss": 8.48063621106121e-07
   },
   {
-    "mse": 1.0590596502879634e-05,
-    "psnr": 49.75079578078222,
-    "ssim": 0.9960804554549131,
+    "mse": 5.887722181796562e-06,
+    "psnr": 52.30052690817176,
+    "ssim": 0.9976995454346838,
     "success": true,
     "label_match": 1,
     "pred_label": 0,
@@ -52,7 +52,7 @@
     "client_id": 4,
     "iterations": 12,
     "converged": true,
-    "duration_sec": 3.7426583766937256,
-    "final_grad_loss": 9.216983016813174e-07
+    "duration_sec": 2.9259729385375977,
+    "final_grad_loss": 6.866895319035393e-07
   }
 ]

@@ -1,8 +1,8 @@
 [
   {
-    "mse": 4.760632350553351e-07,
-    "psnr": 63.22335356498844,
-    "ssim": 0.9998134516241136,
+    "mse": 3.4509153579165286e-07,
+    "psnr": 64.62065692705208,
+    "ssim": 0.9998660872051538,
     "success": true,
     "label_match": 1,
     "pred_label": 9,
@@ -10,13 +10,13 @@
     "client_id": 1,
     "iterations": 9,
     "converged": true,
-    "duration_sec": 2.7391507625579834,
-    "final_grad_loss": 6.47547949483851e-07
+    "duration_sec": 4.655274391174316,
+    "final_grad_loss": 4.750850450818689e-07
   },
   {
-    "mse": 5.051203402217652e-07,
-    "psnr": 62.966051429344645,
-    "ssim": 0.9998048947862357,
+    "mse": 4.114673117783241e-07,
+    "psnr": 63.8566466076321,
+    "ssim": 0.9998556065165307,
     "success": true,
     "label_match": 1,
     "pred_label": 5,
@@ -24,27 +24,27 @@
     "client_id": 2,
     "iterations": 9,
     "converged": true,
-    "duration_sec": 2.822025775909424,
-    "final_grad_loss": 8.40468544538453e-07
+    "duration_sec": 5.0752880573272705,
+    "final_grad_loss": 6.592408681171946e-07
   },
   {
-    "mse": 3.265818691033928e-07,
-    "psnr": 64.8600792972464,
-    "ssim": 0.9998699250546369,
+    "mse": 4.9766473608769957e-08,
+    "psnr": 73.03063131739617,
+    "ssim": 0.9999779034252009,
     "success": true,
     "label_match": 1,
     "pred_label": 7,
     "true_label": 7,
     "client_id": 3,
-    "iterations": 9,
+    "iterations": 10,
     "converged": true,
-    "duration_sec": 2.9727935791015625,
-    "final_grad_loss": 8.978973937701085e-07
+    "duration_sec": 5.4941816329956055,
+    "final_grad_loss": 8.257060812866257e-08
   },
   {
-    "mse": 5.271736540635175e-07,
-    "psnr": 62.780463020952666,
-    "ssim": 0.9997624206887789,
+    "mse": 7.573794960080704e-07,
+    "psnr": 61.20686456399095,
+    "ssim": 0.9996450088979784,
     "success": true,
     "label_match": 1,
     "pred_label": 0,
@@ -52,7 +52,7 @@
     "client_id": 4,
     "iterations": 10,
     "converged": true,
-    "duration_sec": 3.264779567718506,
-    "final_grad_loss": 4.1663292904559057e-07
+    "duration_sec": 5.642178058624268,
+    "final_grad_loss": 5.576731041401217e-07
   }
 ]

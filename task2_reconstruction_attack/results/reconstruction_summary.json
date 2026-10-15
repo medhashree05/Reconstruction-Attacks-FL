@@ -1,8 +1,8 @@
 [
   {
-    "mse": 1.9021166508537135e-07,
-    "psnr": 67.20762852662217,
-    "ssim": 0.9999257509619737,
+    "mse": 1.5531703922988527e-07,
+    "psnr": 68.08780896894847,
+    "ssim": 0.9999416641706278,
     "success": true,
     "label_match": 1,
     "pred_label": 9,
@@ -10,7 +10,49 @@
     "client_id": 1,
     "iterations": 12,
     "converged": true,
-    "duration_sec": 2.919217586517334,
-    "final_grad_loss": 5.203720547797275e-07
+    "duration_sec": 3.6148455142974854,
+    "final_grad_loss": 4.868292080573156e-07
+  },
+  {
+    "mse": 5.02555117520842e-08,
+    "psnr": 72.98816300230942,
+    "ssim": 0.9999875369643377,
+    "success": true,
+    "label_match": 1,
+    "pred_label": 5,
+    "true_label": 5,
+    "client_id": 2,
+    "iterations": 13,
+    "converged": true,
+    "duration_sec": 3.5333847999572754,
+    "final_grad_loss": 3.51286416844232e-07
+  },
+  {
+    "mse": 1.959480186997098e-07,
+    "psnr": 67.0785912347005,
+    "ssim": 0.9999413484137906,
+    "success": true,
+    "label_match": 1,
+    "pred_label": 7,
+    "true_label": 7,
+    "client_id": 3,
+    "iterations": 12,
+    "converged": true,
+    "duration_sec": 3.445824146270752,
+    "final_grad_loss": 6.951912610020372e-07
+  },
+  {
+    "mse": 2.7110303335575736e-07,
+    "psnr": 65.66865623097135,
+    "ssim": 0.9999338058400745,
+    "success": true,
+    "label_match": 1,
+    "pred_label": 0,
+    "true_label": 0,
+    "client_id": 4,
+    "iterations": 13,
+    "converged": true,
+    "duration_sec": 4.037997484207153,
+    "final_grad_loss": 5.196623078518314e-07
   }
 ]
