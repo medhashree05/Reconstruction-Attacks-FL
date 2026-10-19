@@ -10,7 +10,7 @@
     "client_id": 1,
     "iterations": 12,
     "converged": true,
-    "duration_sec": 4.718634366989136,
+    "duration_sec": 3.1941652297973633,
     "final_grad_loss": 4.0994956407303107e-07
   },
   {
@@ -24,7 +24,7 @@
     "client_id": 2,
     "iterations": 12,
     "converged": true,
-    "duration_sec": 6.332515001296997,
+    "duration_sec": 3.578617572784424,
     "final_grad_loss": 6.62971274323354e-07
   },
   {
@@ -38,7 +38,7 @@
     "client_id": 3,
     "iterations": 11,
     "converged": true,
-    "duration_sec": 2.7030141353607178,
+    "duration_sec": 3.6957530975341797,
     "final_grad_loss": 8.48063621106121e-07
   },
   {
@@ -52,7 +52,7 @@
     "client_id": 4,
     "iterations": 12,
     "converged": true,
-    "duration_sec": 2.9259729385375977,
+    "duration_sec": 3.995255470275879,
     "final_grad_loss": 6.866895319035393e-07
   }
 ]

@@ -1,8 +1,8 @@
 [
   {
-    "mse": 0.4168104827404022,
-    "psnr": 3.800613671100128,
-    "ssim": 0.12708692050698206,
+    "mse": 0.45009660720825195,
+    "psnr": 3.4669426072579093,
+    "ssim": 0.03965664230042289,
     "success": false,
     "label_match": 1,
     "pred_label": 9,
@@ -10,27 +10,27 @@
     "client_id": 1,
     "iterations": 100,
     "converged": false,
-    "duration_sec": 23.7394380569458,
-    "final_grad_loss": 29.84980010986328
+    "duration_sec": 51.12239098548889,
+    "final_grad_loss": 31.116031646728516
   },
   {
-    "mse": 0.4300905466079712,
-    "psnr": 3.664401031355457,
-    "ssim": 0.1885487764418436,
+    "mse": 0.43761739134788513,
+    "psnr": 3.5890542703948807,
+    "ssim": 0.12863756658258096,
     "success": false,
     "label_match": 1,
     "pred_label": 5,
     "true_label": 5,
     "client_id": 2,
-    "iterations": 5,
-    "converged": true,
-    "duration_sec": 0.32180166244506836,
-    "final_grad_loss": 78.58531951904297
+    "iterations": 100,
+    "converged": false,
+    "duration_sec": 64.94529390335083,
+    "final_grad_loss": 30.911230087280273
   },
   {
-    "mse": 0.42569148540496826,
-    "psnr": 3.709050364064187,
-    "ssim": 0.1282459426393477,
+    "mse": 0.41830918192863464,
+    "psnr": 3.785026025071676,
+    "ssim": 0.13810763314747995,
     "success": false,
     "label_match": 1,
     "pred_label": 7,
@@ -38,21 +38,21 @@
     "client_id": 3,
     "iterations": 100,
     "converged": false,
-    "duration_sec": 22.555702924728394,
-    "final_grad_loss": 30.725187301635742
+    "duration_sec": 39.521610260009766,
+    "final_grad_loss": 30.691335678100586
   },
   {
-    "mse": 0.43673059344291687,
-    "psnr": 3.5978638422232505,
-    "ssim": 0.16532100360236554,
+    "mse": 0.45162272453308105,
+    "psnr": 3.452242135782888,
+    "ssim": 0.13972042670744755,
     "success": false,
     "label_match": 1,
     "pred_label": 0,
     "true_label": 0,
     "client_id": 4,
-    "iterations": 5,
-    "converged": true,
-    "duration_sec": 0.3311769962310791,
-    "final_grad_loss": 93.1281509399414
+    "iterations": 100,
+    "converged": false,
+    "duration_sec": 35.132099628448486,
+    "final_grad_loss": 30.447330474853516
   }
 ]
