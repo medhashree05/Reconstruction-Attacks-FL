@@ -305,7 +305,3 @@ The saved `task4_evaluation/results/model_accuracy_results.csv` records these fi
 4. Geiping, J. et al. “Inverting Gradients—How Easy Is It to Break Privacy in Federated Learning?” *NeurIPS*, 2020.
 5. Abadi, M. et al. “Deep Learning with Differential Privacy.” *ACM CCS*, 2016.
 6. Bonawitz, K. et al. “Practical Secure Aggregation for Privacy-Preserving Machine Learning.” *ACM CCS*, 2017.
-
-## License
-
-No license is specified in the current repository. Add a license file before distributing the project if required.
